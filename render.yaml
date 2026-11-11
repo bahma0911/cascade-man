@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: cascade-cafe-management
+    runtime: node
+    plan: free
+    buildCommand: npm run render-build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 12h
+      - key: TIMEZONE
+        value: Africa/Addis_Ababa
+      - key: CLIENT_URL
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM
+        value: no-reply@bahma.com.et
+      - key: APP_NAME
+        value: Cascade Coffee

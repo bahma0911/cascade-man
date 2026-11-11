@@ -1,0 +1,21 @@
+{
+  "name": "cafe-system-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "dev": "concurrently -n \"server,client\" -c \"blue,green\" \"npm run server\" \"npm run client\"",
+    "server": "cd cafe-system/server && npm run dev",
+    "client": "cd cafe-system/client && npm run dev",
+    "seed": "cd cafe-system/server && npm run seed",
+    "test": "cd cafe-system/server && npm run test",
+    "build": "cd cafe-system/client && npm run build",
+    "render-build": "npm --prefix cafe-system/server install --omit=dev && npm --prefix cafe-system/client install --include=dev && npm --prefix cafe-system/client run build",
+    "start": "npm --prefix cafe-system/server start"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
