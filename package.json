@@ -11,8 +11,8 @@
     "client": "cd cafe-system/client && npm run dev",
     "seed": "cd cafe-system/server && npm run seed",
     "test": "cd cafe-system/server && npm run test",
-    "build": "cd cafe-system/client && npm run build",
-    "render-build": "npm --prefix cafe-system/server install --omit=dev && npm --prefix cafe-system/client install --include=dev && npm --prefix cafe-system/client run build",
+    "build": "npm --prefix cafe-system/server install --omit=dev && npm --prefix cafe-system/client install --include=dev && npm --prefix cafe-system/client run build",
+    "render-build": "npm run build",
     "start": "npm --prefix cafe-system/server start"
   },
   "devDependencies": {
