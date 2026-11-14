@@ -36,8 +36,7 @@ function IndexRedirect() {
   if (loading) return null;
   if (!isAuthenticated) return <Navigate to="/login" replace />;
   if (user.role === 'admin') return <Navigate to="/admin" replace />;
-  if (user.role === 'kitchen') return <Navigate to="/kitchen" replace />;
-  if (user.role === 'barista') return <Navigate to="/barista" replace />;
+  if (user.role === 'kitchen' || user.role === 'barista') return <Navigate to="/kitchen" replace />;
   return <Navigate to="/waiter" replace />;
 }
 
@@ -139,11 +138,11 @@ export default function AppRoutes() {
           }
         />
 
-        {/* Kitchen Routes */}
+        {/* Unified Kitchen & Bar Prep Routes */}
         <Route
           path="/kitchen"
           element={
-            <ProtectedRoute allowedRoles={['kitchen', 'admin']}>
+            <ProtectedRoute allowedRoles={['kitchen', 'barista', 'admin']}>
               <KitchenBoardPage />
             </ProtectedRoute>
           }
@@ -151,18 +150,18 @@ export default function AppRoutes() {
         <Route
           path="/kitchen/prep-wastage"
           element={
-            <ProtectedRoute allowedRoles={['kitchen', 'admin']}>
+            <ProtectedRoute allowedRoles={['kitchen', 'barista', 'admin']}>
               <KitchenPrepWastagePage />
             </ProtectedRoute>
           }
         />
 
-        {/* Barista Routes */}
+        {/* Barista Route (Unified with Kitchen Board) */}
         <Route
           path="/barista"
           element={
-            <ProtectedRoute allowedRoles={['barista', 'admin']}>
-              <BaristaBoardPage />
+            <ProtectedRoute allowedRoles={['barista', 'kitchen', 'admin']}>
+              <KitchenBoardPage />
             </ProtectedRoute>
           }
         />

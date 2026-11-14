@@ -15,6 +15,8 @@ import {
   Trash2,
   AlertCircle,
   Check,
+  Eye,
+  EyeOff,
 } from 'lucide-react';
 
 export default function UsersAdminPage() {
@@ -24,6 +26,7 @@ export default function UsersAdminPage() {
 
   // Create User Modal
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [showCreatePassword, setShowCreatePassword] = useState(false);
   const [createData, setCreateData] = useState({
     name: '',
     username: '',
@@ -36,6 +39,7 @@ export default function UsersAdminPage() {
 
   // Reset Password Modal
   const [isResetOpen, setIsResetOpen] = useState(false);
+  const [showResetPassword, setShowResetPassword] = useState(false);
   const [resetTargetUser, setResetTargetUser] = useState(null);
   const [newPassword, setNewPassword] = useState('');
   const [resetError, setResetError] = useState('');
@@ -365,14 +369,24 @@ export default function UsersAdminPage() {
             <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
               Initial Password (min 6 chars)
             </label>
-            <input
-              type="password"
-              required
-              value={createData.password}
-              onChange={(e) => setCreateData({ ...createData, password: e.target.value })}
-              placeholder="••••••••"
-              className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
-            />
+            <div className="relative">
+              <input
+                type={showCreatePassword ? 'text' : 'password'}
+                required
+                value={createData.password}
+                onChange={(e) => setCreateData({ ...createData, password: e.target.value })}
+                placeholder="••••••••"
+                className="w-full pl-3.5 pr-10 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+              />
+              <button
+                type="button"
+                onClick={() => setShowCreatePassword((prev) => !prev)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
+                aria-label={showCreatePassword ? 'Hide password' : 'Show password'}
+              >
+                {showCreatePassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
           </div>
 
           <div>
@@ -459,14 +473,24 @@ export default function UsersAdminPage() {
             <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
               {STRINGS.users.newPassword}
             </label>
-            <input
-              type="password"
-              required
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
-            />
+            <div className="relative">
+              <input
+                type={showResetPassword ? 'text' : 'password'}
+                required
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full pl-3.5 pr-10 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+              />
+              <button
+                type="button"
+                onClick={() => setShowResetPassword((prev) => !prev)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
+                aria-label={showResetPassword ? 'Hide password' : 'Show password'}
+              >
+                {showResetPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
           </div>
 
           <div className="pt-4 border-t border-gray-100 flex items-center justify-end gap-3">

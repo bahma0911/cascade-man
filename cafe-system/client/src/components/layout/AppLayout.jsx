@@ -70,11 +70,7 @@ export default function AppLayout() {
                 </NavLink>
                 <NavLink to="/kitchen" className={navLinkClass}>
                   <ChefHat className="w-4 h-4" />
-                  Kitchen
-                </NavLink>
-                <NavLink to="/barista" className={navLinkClass}>
-                  <Coffee className="w-4 h-4" />
-                  Barista
+                  Kitchen & Bar
                 </NavLink>
                 <NavLink to="/admin/reports" className={navLinkClass}>
                   <BarChart3 className="w-4 h-4" />
@@ -106,24 +102,15 @@ export default function AppLayout() {
               </>
             )}
 
-            {isKitchen && (
+            {(isKitchen || isBarista) && (
               <>
                 <NavLink to="/kitchen" end className={navLinkClass}>
                   <ChefHat className="w-4 h-4" />
-                  {STRINGS.nav.kitchen}
+                  Kitchen & Bar
                 </NavLink>
                 <NavLink to="/kitchen/prep-wastage" className={navLinkClass}>
                   <Scale className="w-4 h-4" />
                   {STRINGS.nav.prepWastage}
-                </NavLink>
-              </>
-            )}
-
-            {isBarista && (
-              <>
-                <NavLink to="/barista" end className={navLinkClass}>
-                  <Coffee className="w-4 h-4" />
-                  {STRINGS.nav.barista}
                 </NavLink>
               </>
             )}

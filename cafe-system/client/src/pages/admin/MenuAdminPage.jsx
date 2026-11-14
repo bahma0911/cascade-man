@@ -296,8 +296,8 @@ export default function MenuAdminPage() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
+      <div className="flex flex-col gap-3.5">
+        <div className="relative w-full">
           <Search className="w-5 h-5 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
@@ -309,7 +309,7 @@ export default function MenuAdminPage() {
         </div>
 
         {/* Category Pills */}
-        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+        <div className="flex flex-wrap items-center gap-2 pb-1">
           <button
             onClick={() => setSelectedCategory('')}
             className={`px-4 py-2.5 rounded-2xl text-xs font-bold transition-all whitespace-nowrap ${

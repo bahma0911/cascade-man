@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { STRINGS } from '../../locales/strings.js';
-import { Coffee, Lock, User, AlertCircle } from 'lucide-react';
+import { Coffee, Lock, User, AlertCircle, Eye, EyeOff } from 'lucide-react';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -29,19 +30,18 @@ export default function LoginPage() {
       const roleHome =
         user.role === 'admin'
           ? '/admin'
-          : user.role === 'kitchen'
+          : user.role === 'kitchen' || user.role === 'barista'
           ? '/kitchen'
-          : user.role === 'barista'
-          ? '/barista'
           : '/waiter';
 
       const rawFrom = location.state?.from?.pathname;
       let destination = roleHome;
       if (rawFrom && rawFrom !== '/' && rawFrom !== '/login') {
-        if (user.role === 'barista' && rawFrom.startsWith('/barista')) {
-          destination = rawFrom;
-        } else if (user.role === 'kitchen' && rawFrom.startsWith('/kitchen')) {
-          destination = rawFrom;
+        if (
+          (user.role === 'barista' || user.role === 'kitchen') &&
+          (rawFrom.startsWith('/barista') || rawFrom.startsWith('/kitchen'))
+        ) {
+          destination = '/kitchen';
         } else if (user.role === 'waiter' && rawFrom.startsWith('/waiter')) {
           destination = rawFrom;
         } else if (user.role === 'admin') {
@@ -109,13 +109,21 @@ export default function LoginPage() {
                 <Lock className="w-5 h-5" />
               </div>
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 autoComplete="current-password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-gray-900 font-medium placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all text-base"
+                className="w-full pl-11 pr-11 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-gray-900 font-medium placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all text-base"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword((prev) => !prev)}
+                className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none transition-colors"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
             </div>
           </div>
 

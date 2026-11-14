@@ -47,6 +47,7 @@ export default function WaiterHomePage() {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [menuSearch, setMenuSearch] = useState('');
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [orderModalTab, setOrderModalTab] = useState('menu'); // 'menu' | 'cart' (mobile responsiveness)
   const [submittingOrder, setSubmittingOrder] = useState(false);
   const [orderError, setOrderError] = useState('');
 
@@ -193,6 +194,7 @@ export default function WaiterHomePage() {
       setSelectedTable(table);
       setCart([]);
       setOrderError('');
+      setOrderModalTab('menu');
       setIsOrderModalOpen(true);
     }
   };
@@ -224,6 +226,10 @@ export default function WaiterHomePage() {
     );
   };
 
+  const removeCartItem = (itemId) => {
+    setCart((prev) => prev.filter((c) => c.menuItem._id !== itemId));
+  };
+
   const updateCartNote = (itemId, note) => {
     setCart((prev) =>
       prev.map((c) => (c.menuItem._id === itemId ? { ...c, note } : c))
@@ -234,6 +240,7 @@ export default function WaiterHomePage() {
     (sum, c) => sum + c.menuItem.price * c.quantity,
     0
   );
+  const cartItemCount = cart.reduce((sum, c) => sum + c.quantity, 0);
 
   // Submit New Order
   const handleSendOrder = async () => {
@@ -824,9 +831,36 @@ export default function WaiterHomePage() {
         title={`New Order for ${selectedTable?.name || 'Table'}`}
         maxWidth="max-w-4xl"
       >
+        {/* Mobile View Switcher (Only visible on small screens) */}
+        <div className="flex md:hidden items-center p-1 bg-gray-100 rounded-2xl mb-4">
+          <button
+            type="button"
+            onClick={() => setOrderModalTab('menu')}
+            className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all text-center ${
+              orderModalTab === 'menu'
+                ? 'bg-white text-gray-900 shadow-sm'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            Menu Items
+          </button>
+          <button
+            type="button"
+            onClick={() => setOrderModalTab('cart')}
+            className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all text-center flex items-center justify-center gap-1.5 ${
+              orderModalTab === 'cart'
+                ? 'bg-amber-600 text-white shadow-sm'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            <ShoppingBag className="w-3.5 h-3.5" />
+            <span>Order Cart ({cartItemCount})</span>
+          </button>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Menu Browser (2 columns) */}
-          <div className="md:col-span-2 space-y-4">
+          {/* Menu Browser (2 columns on desktop) */}
+          <div className={`md:col-span-2 space-y-4 ${orderModalTab === 'cart' ? 'hidden md:block' : 'block'}`}>
             <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
               <button
                 onClick={() => setSelectedCategory('')}
@@ -853,7 +887,7 @@ export default function WaiterHomePage() {
               ))}
             </div>
 
-            <div className="grid grid-cols-2 gap-3 max-h-96 overflow-y-auto pr-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[50vh] md:max-h-96 overflow-y-auto pr-1">
               {filteredMenu.map((item) => (
                 <button
                   key={item._id}
@@ -879,16 +913,51 @@ export default function WaiterHomePage() {
                 </button>
               ))}
             </div>
+
+            {/* Sticky Mobile Floating Cart Bar */}
+            {cart.length > 0 && (
+              <div className="md:hidden sticky bottom-0 bg-white/95 backdrop-blur-md border border-amber-200/80 p-3 rounded-2xl shadow-lg flex items-center justify-between mt-3">
+                <div>
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
+                    Current Selection
+                  </span>
+                  <span className="text-xs font-black text-amber-800">
+                    {cartItemCount} items · {cartTotal} {STRINGS.currency}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setOrderModalTab('cart')}
+                  className="px-4 py-2 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-md shadow-amber-600/30"
+                >
+                  <span>Review & Send</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* Cart & Send Panel (1 column) */}
-          <div className="bg-gray-50 rounded-2xl p-4 border border-gray-200 flex flex-col justify-between">
+          {/* Cart & Send Panel (1 column on desktop) */}
+          <div
+            className={`bg-gray-50 rounded-2xl p-4 border border-gray-200 flex flex-col justify-between ${
+              orderModalTab === 'menu' ? 'hidden md:flex' : 'flex'
+            }`}
+          >
             <div>
               <div className="flex items-center justify-between pb-3 border-b border-gray-200 mb-3">
-                <h4 className="font-bold text-gray-900 text-sm">Cart Items</h4>
-                <span className="text-xs font-bold text-gray-500">
-                  {cart.length} unique
-                </span>
+                <div className="flex items-center gap-2">
+                  <h4 className="font-bold text-gray-900 text-sm">Cart Items</h4>
+                  <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[11px] font-bold">
+                    {cartItemCount}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setOrderModalTab('menu')}
+                  className="md:hidden text-xs text-amber-600 font-bold hover:underline"
+                >
+                  + Add more dishes
+                </button>
               </div>
 
               {orderError && (
@@ -898,45 +967,66 @@ export default function WaiterHomePage() {
               )}
 
               {cart.length === 0 ? (
-                <p className="text-xs text-gray-400 italic text-center py-10">
-                  Tap menu items to add to this order
-                </p>
+                <div className="text-center py-10">
+                  <p className="text-xs text-gray-400 italic mb-3">
+                    Tap menu items to add to this order
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setOrderModalTab('menu')}
+                    className="md:hidden px-4 py-2 bg-amber-600 text-white text-xs font-bold rounded-xl"
+                  >
+                    Browse Menu
+                  </button>
+                </div>
               ) : (
-                <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
+                <div className="space-y-3 max-h-[45vh] md:max-h-64 overflow-y-auto pr-1">
                   {cart.map((c) => (
                     <div
                       key={c.menuItem._id}
-                      className="p-2.5 rounded-xl bg-white border border-gray-200 text-xs"
+                      className="p-2.5 rounded-xl bg-white border border-gray-200 text-xs shadow-2xs"
                     >
                       <div className="flex items-center justify-between mb-1.5">
                         <span className="font-bold text-gray-900 leading-tight">
                           {c.menuItem.name}
                         </span>
-                        <span className="font-black text-amber-700">
-                          {c.menuItem.price * c.quantity} {STRINGS.currency}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="font-black text-amber-700">
+                            {c.menuItem.price * c.quantity} {STRINGS.currency}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => removeCartItem(c.menuItem._id)}
+                            className="text-gray-400 hover:text-rose-600 p-0.5"
+                            title="Remove item"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
                       </div>
-                      <div className="flex items-center justify-between mt-2">
+                      <div className="flex items-center justify-between mt-2 gap-2">
                         <input
                           type="text"
                           placeholder="Add note..."
                           value={c.note}
                           onChange={(e) => updateCartNote(c.menuItem._id, e.target.value)}
-                          className="px-2 py-1 bg-gray-50 border border-gray-200 rounded-lg text-[11px] w-28 focus:bg-white focus:outline-none"
+                          className="px-2 py-1 bg-gray-50 border border-gray-200 rounded-lg text-[11px] flex-1 focus:bg-white focus:outline-none"
                         />
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1.5 flex-shrink-0">
                           <button
+                            type="button"
                             onClick={() => updateCartQty(c.menuItem._id, -1)}
-                            className="p-1 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200"
+                            className="p-1 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 active:scale-95"
                           >
                             <Minus className="w-3 h-3" />
                           </button>
-                          <span className="font-black text-xs px-1">
+                          <span className="font-black text-xs px-1 min-w-[1rem] text-center">
                             {c.quantity}
                           </span>
                           <button
+                            type="button"
                             onClick={() => updateCartQty(c.menuItem._id, 1)}
-                            className="p-1 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200"
+                            className="p-1 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 active:scale-95"
                           >
                             <Plus className="w-3 h-3" />
                           </button>
@@ -948,8 +1038,8 @@ export default function WaiterHomePage() {
               )}
             </div>
 
-            <div className="pt-4 border-t border-gray-200 mt-4">
-              <div className="flex items-center justify-between mb-3 text-sm">
+            <div className="pt-4 border-t border-gray-200 mt-4 space-y-3">
+              <div className="flex items-center justify-between text-sm">
                 <span className="font-bold text-gray-600">Total:</span>
                 <span className="font-black text-lg text-gray-900">
                   {cartTotal} {STRINGS.currency}
@@ -958,11 +1048,20 @@ export default function WaiterHomePage() {
               <button
                 onClick={handleSendOrder}
                 disabled={cart.length === 0 || submittingOrder}
-                className="w-full py-3 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold rounded-xl shadow-md shadow-amber-600/20 transition-all flex items-center justify-center gap-2 text-xs disabled:opacity-50"
+                className="w-full py-3.5 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold rounded-xl shadow-md shadow-amber-600/20 transition-all flex items-center justify-center gap-2 text-xs disabled:opacity-50"
               >
                 <Send className="w-4 h-4" />
                 {submittingOrder ? 'Submitting...' : 'Send Order to Kitchen'}
               </button>
+              {orderModalTab === 'cart' && (
+                <button
+                  type="button"
+                  onClick={() => setOrderModalTab('menu')}
+                  className="md:hidden w-full py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl text-center"
+                >
+                  ← Back to Menu
+                </button>
+              )}
             </div>
           </div>
         </div>

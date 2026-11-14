@@ -22,15 +22,13 @@ export default function ProtectedRoute({ children, allowedRoles, requireInventor
   if (allowedRoles && !allowedRoles.includes(user.role)) {
     // Redirect to their default dashboard
     if (user.role === 'admin') return <Navigate to="/admin" replace />;
-    if (user.role === 'kitchen') return <Navigate to="/kitchen" replace />;
-    if (user.role === 'barista') return <Navigate to="/barista" replace />;
+    if (user.role === 'kitchen' || user.role === 'barista') return <Navigate to="/kitchen" replace />;
     return <Navigate to="/waiter" replace />;
   }
 
   if (requireInventory && !canManageInventory) {
     if (user?.role === 'admin') return <Navigate to="/admin" replace />;
-    if (user?.role === 'kitchen') return <Navigate to="/kitchen" replace />;
-    if (user?.role === 'barista') return <Navigate to="/barista" replace />;
+    if (user?.role === 'kitchen' || user?.role === 'barista') return <Navigate to="/kitchen" replace />;
     return <Navigate to="/waiter" replace />;
   }
 
